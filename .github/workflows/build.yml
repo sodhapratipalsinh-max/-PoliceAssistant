@@ -5,19 +5,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip and Prepare
+      - name: Unzip Project
         run: |
-          unzip -o PoliceAssistant.zip -d temp_extract
-          cp -r temp_extract/*. || true
-          cp -r temp_extract/.*. || true
-          rm -rf PoliceAssistant.zip temp_extract
+          unzip -o PoliceAssistant.zip -d.
+          if [ -d "PoliceAssistant" ]; then
+            cp -r PoliceAssistant/*. || true
+            rm -rf PoliceAssistant
+          fi
+          if [ -d "app" ]; then
+            echo "app found"
+          else
+            # if zip had inner folder
+            mv */app. || true
+            mv */gradlew. || true
+            mv */gradle. || true
+            mv */build.gradle*. || true
+            mv */settings.gradle*. || true
+          fi
+          rm -f PoliceAssistant.zip
           ls -la
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build Debug APK
+      - name: Build APK
         run: |
           chmod +x gradlew
          ./gradlew assembleDebug
