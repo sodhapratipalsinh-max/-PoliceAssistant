@@ -5,22 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip Project
+      - name: Unzip
         run: |
-          unzip -o PoliceAssistant.zip -d.
-          if [ -d "PoliceAssistant" ]; then
-            cp -r PoliceAssistant/*. || true
+          unzip -o PoliceAssistant.zip || true
+          if [ -d PoliceAssistant ]; then
+            cp -r PoliceAssistant/..
             rm -rf PoliceAssistant
-          fi
-          if [ -d "app" ]; then
-            echo "app found"
-          else
-            # if zip had inner folder
-            mv */app. || true
-            mv */gradlew. || true
-            mv */gradle. || true
-            mv */build.gradle*. || true
-            mv */settings.gradle*. || true
           fi
           rm -f PoliceAssistant.zip
           ls -la
@@ -32,9 +22,9 @@ jobs:
       - name: Build APK
         run: |
           chmod +x gradlew
-         ./gradlew assembleDebug
+        ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: PoliceAssistant-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
